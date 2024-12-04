@@ -1,5 +1,5 @@
 <!--
-   Copyright 2024 Alexander Stärk
+   Copyright 2024 Alexander Stärk & Fasteroid
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,12 +13,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-# Basilisque - Auto Implementer
+# Basilisque - Auto Implementer - Fasteroid's Fork
 
 ## Overview
 This project provides functionality to automatically implement interfaces.
 
-[![NuGet Basilisque.AutoImplementer.CodeAnalysis](https://img.shields.io/badge/NuGet_Basilisque.AutoImplementer.CodeAnalysis-latest-blue.svg)](https://www.nuget.org/packages/Basilisque.AutoImplementer.CodeAnalysis)
 [![License](https://img.shields.io/badge/License-Apache%20License%202.0-red.svg)](LICENSE.txt)
 
 ## Description
@@ -26,10 +25,10 @@ This project contains a source generator that automatically implements interface
 The goal is to provide a workaround for C# not supporting multiple inheritance for some basic use cases.
 
 ## Getting Started
-Install the NuGet package [Basilisque.AutoImplementer](https://www.nuget.org/packages/Basilisque.AutoImplementer.CodeAnalysis).  
+Install the NuGet package [Basilisque.AutoImplementer.CodeAnalysis.Fasteroid](https://www.nuget.org/packages/Basilisque.AutoImplementer.CodeAnalysis).  
 Installing the package will add the source generator to your project.
 
-Now you're ready to [start implementing your interfaces automatically](https://github.com/basilisque-framework/AutoImplementer/wiki/Getting-Started).
+Now you're ready to [start implementing your interfaces automatically](https://github.com/fasteroid/AutoImplementer/wiki/Getting-Started).
 
 
 ## Features
@@ -159,7 +158,7 @@ public partial class Event
 
 The source generator now adds the members to the corresponding classes without you having to do this on your own every time.
 
-For details see the __[wiki](https://github.com/basilisque-framework/AutoImplementer/wiki)__.
+For details see the __[wiki](https://github.com/fasteroid/AutoImplementer/wiki)__.
 
 
 ## License

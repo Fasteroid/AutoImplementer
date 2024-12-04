@@ -14,9 +14,18 @@
    limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionSuffix>F</VersionSuffix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <Authors>Alexander Stärk, Fasteroid</Authors>
+    <PackageProjectUrl>https://github.com/fasteroid/AutoImplementer</PackageProjectUrl>
+    <AssemblyName>Basilisque.$(MSBuildProjectName)</AssemblyName>
+    <PackageId>$(AssemblyName).Fasteroid</PackageId>
+    <Title>$(AssemblyName).Fasteroid</Title>
+    <RootNamespace>Fasteroid.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
   </PropertyGroup>
   
   <ItemGroup>

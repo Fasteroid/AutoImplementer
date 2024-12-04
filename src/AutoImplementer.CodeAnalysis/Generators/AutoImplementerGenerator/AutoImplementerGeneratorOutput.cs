@@ -119,7 +119,7 @@ internal static class AutoImplementerGeneratorOutput
                 fqtn += "?";
         }
 
-        if (propertySymbol.GetAttributes().Any(a => a.AttributeClass?.Name == StaticAttributesGeneratorData.ImplementAsRequiredAttributeClassName))
+        if (propertySymbol.GetAttributes().Any(a => a.AttributeClass?.Name == StaticAttributesGeneratorData.ExemptionAttributeClassName))
             fqtn = "required " + fqtn;
 
         var pi = new Basilisque.CodeAnalysis.Syntax.PropertyInfo(fqtn, propertySymbol.Name);

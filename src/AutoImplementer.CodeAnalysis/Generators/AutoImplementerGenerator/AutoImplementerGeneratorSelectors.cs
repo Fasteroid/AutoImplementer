@@ -23,7 +23,6 @@ namespace Basilisque.AutoImplementer.CodeAnalysis.Generators.AutoImplementerGene
 
 internal static class AutoImplementerGeneratorSelectors
 {
-    private static readonly string _attributeNameWithoutSuffix = StaticAttributesGeneratorData.AutoImplementClassInterfacesAttributeClassName.Substring(0, StaticAttributesGeneratorData.AutoImplementClassInterfacesAttributeClassName.Length - 9);
     private static readonly (ClassDeclarationSyntax Node, ImmutableArray<INamedTypeSymbol> Interfaces) _emptyNodeInfo = (null, ImmutableArray<INamedTypeSymbol>.Empty)!;
 
     internal static IncrementalValuesProvider<(ClassDeclarationSyntax Node, ImmutableArray<INamedTypeSymbol> Interfaces)> GetClassesToGenerate(IncrementalGeneratorInitializationContext context)
@@ -44,12 +43,6 @@ internal static class AutoImplementerGeneratorSelectors
         // ensure node is a class declaration
         if (node is not ClassDeclarationSyntax classDeclaration)
             return false;
-
-        // check if the node is annotated
-        // all annotated nodes will be used for implementation or diagnostics
-        // (use StartsWith because a.Name can look like 'AutoImplementInterfaces', 'AutoImplementInterfacesAttribute', 'AutoImplementInterfaces<...>' or 'AutoImplementInterfacesAttribute<...>')
-        if (classDeclaration.AttributeLists.Any(al => al.Attributes.Any(a => a.Name.ToString().StartsWith(_attributeNameWithoutSuffix))))
-            return true;
 
         // check if classDeclaration has a list of base types, those are all candidates
         if (classDeclaration.BaseList?.Types.Any() == true)

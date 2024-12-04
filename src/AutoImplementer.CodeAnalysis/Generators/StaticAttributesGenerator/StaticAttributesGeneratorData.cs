@@ -24,19 +24,15 @@ namespace Basilisque.AutoImplementer.CodeAnalysis.Generators.StaticAttributesGen
 public static class StaticAttributesGeneratorData
 {
     internal const string AutoImplementInterfaceAttributeClassName = "AutoImplementInterfaceAttribute";
-    internal const string AutoImplementClassInterfacesAttributeClassName = "AutoImplementInterfacesAttribute";
-    internal const string AutoImplementOnMembersAttributeClassName = "AutoImplementAttribute";
-    internal const string ImplementAsRequiredAttributeClassName = "RequiredAttribute";
+        internal const string AutoImplementInterfaceAttribute_Strict = "Strict";
+
+    internal const string ExemptionAttributeClassName = "AutoImplementExemptAttribute";
 
     internal const string AutoImplementInterfaceAttributeFullName = $"{AutoImplementedAttributesTargetNamespace}.{AutoImplementInterfaceAttributeClassName}";
-    internal const string AutoImplementClassInterfacesAttributeFullName = $"{AutoImplementedAttributesTargetNamespace}.{AutoImplementClassInterfacesAttributeClassName}";
-    internal const string AutoImplementOnMembersAttributeFullName = $"{AutoImplementedAttributesTargetNamespace}.{AutoImplementOnMembersAttributeClassName}";
-    internal const string ImplementAsRequiredAttributeFullName = $"{AutoImplementedAttributesTargetNamespace}.{ImplementAsRequiredAttributeClassName}";
+    internal const string ExemptionAttributeFullName              = $"{AutoImplementedAttributesTargetNamespace}.{ExemptionAttributeClassName}";
 
     private const string AutoImplementInterfaceAttributeCompilationName = $"{AutoImplementInterfaceAttributeFullName}.g";
-    private const string AutoImplementClassInterfacesAttributeCompilationName = $"{AutoImplementClassInterfacesAttributeFullName}.g";
-    private const string AutoImplementOnMembersAttributeCompilationName = $"{AutoImplementOnMembersAttributeFullName}.g";
-    private const string ImplementAsRequiredAttributeCompilationName = $"{ImplementAsRequiredAttributeFullName}.g";
+    private const string ExemptionAttributeCompilationName              = $"{ExemptionAttributeFullName}.g";
 
     private static readonly string _autoImplementInterfaceAttributeSource =
     @$"{GeneratedFileSharedHeaderWithUsings}
@@ -50,60 +46,22 @@ namespace {AutoImplementedAttributesTargetNamespace}
     internal sealed class {AutoImplementInterfaceAttributeClassName} : Attribute
     {{
         /// <summary>
-        /// Forces the interface to be automatically implemented event if the implementing class isn't marked with the <see cref=""{AutoImplementedAttributesTargetNamespace}.{AutoImplementClassInterfacesAttributeClassName}""/>.
+        /// Should non-nullable properties be marked required?
         /// </summary>
-        public bool Force {{ get; set; }} = false;
-
-        /// <summary>
-        /// Determines if all properties of the interface should be implemented with the 'required' keyword.
-        /// </summary>
-        public bool ImplementAllPropertiesRequired {{ get; set; }} = false;
+        public bool {AutoImplementInterfaceAttribute_Strict} {{ get; set; }} = true;
     }}
 }}";
 
-    private static readonly string _autoImplementClassInterfacesAttributeSource =
+    private static readonly string _exemptionAttributeSource =
     @$"{GeneratedFileSharedHeaderWithUsings}
 namespace {AutoImplementedAttributesTargetNamespace}
 {{
     /// <summary>
-    /// Marks a class for automatic implementation of its interfaces.
-    /// By default all interfaces marked with <see cref=""{AutoImplementedAttributesTargetNamespace}.{AutoImplementInterfaceAttributeClassName}""/> will be implemented. The interfaces also can be explicitly stated.
-    /// </summary>
-    {GeneratedClassSharedAttributes}
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    internal class {AutoImplementClassInterfacesAttributeClassName} : Attribute
-    {{
-    }}
-}}";
-
-    private static readonly string _autoImplementOnMembersAttributeSource =
-    @$"{GeneratedFileSharedHeaderWithUsings}
-namespace {AutoImplementedAttributesTargetNamespace}
-{{
-    /// <summary>
-    /// Marks a member of an interface for automatic implementation
-    /// </summary>
-    {GeneratedClassSharedAttributes}
-    [AttributeUsage(AttributeTargets.Property /*| AttributeTargets.Method | AttributeTargets.Event*/, AllowMultiple = false, Inherited = false)]
-    internal sealed class {AutoImplementOnMembersAttributeClassName} : Attribute
-    {{
-        /// <summary>
-        /// Determines if the member should be automatically implemented or not
-        /// </summary>
-        public bool Implement {{ get; set; }} = true;
-    }}
-}}";
-
-    private static readonly string _implementAsRequiredAttributeSource =
-    @$"{GeneratedFileSharedHeaderWithUsings}
-namespace {AutoImplementedAttributesTargetNamespace}
-{{
-    /// <summary>
-    /// Adds the ""required"" keyword to the generated property
+    /// Exempts a property from being automatically implemented
     /// </summary>
     {GeneratedClassSharedAttributes}
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    internal sealed class {ImplementAsRequiredAttributeClassName} : Attribute
+    internal sealed class {ExemptionAttributeClassName} : Attribute
     {{
     }}
 }}";
@@ -114,8 +72,6 @@ namespace {AutoImplementedAttributesTargetNamespace}
     public static readonly IReadOnlyDictionary<string, (string CompilationName, string Source)> SupportedAttributes = new Dictionary<string, (string CompilationName, string Source)>()
     {
         { AutoImplementInterfaceAttributeFullName, (AutoImplementInterfaceAttributeCompilationName, _autoImplementInterfaceAttributeSource) },
-        { AutoImplementClassInterfacesAttributeFullName, (AutoImplementClassInterfacesAttributeCompilationName, _autoImplementClassInterfacesAttributeSource) },
-        { AutoImplementOnMembersAttributeFullName, (AutoImplementOnMembersAttributeCompilationName, _autoImplementOnMembersAttributeSource) },
-        { ImplementAsRequiredAttributeFullName, (ImplementAsRequiredAttributeCompilationName, _implementAsRequiredAttributeSource) },
+        { ExemptionAttributeFullName, (ExemptionAttributeCompilationName, _exemptionAttributeSource) },
     };
 }

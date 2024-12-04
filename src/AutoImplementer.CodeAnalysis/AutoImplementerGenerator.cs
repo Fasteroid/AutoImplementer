@@ -15,7 +15,6 @@
 */
 
 using Basilisque.AutoImplementer.CodeAnalysis.Generators.AutoImplementerGenerator;
-using Basilisque.AutoImplementer.CodeAnalysis.Generators.GenericAttributesGenerator;
 using Basilisque.AutoImplementer.CodeAnalysis.Generators.PolyfillsGenerator;
 using Basilisque.AutoImplementer.CodeAnalysis.Generators.StaticAttributesGenerator;
 using Basilisque.CodeAnalysis.Syntax;
@@ -47,10 +46,7 @@ public class AutoImplementerGenerator : IIncrementalGenerator
 
     private void initializeAttributes(IncrementalGeneratorInitializationContext context)
     {
-        var genericAttributesToGenerateProvider = GenericAttributesGeneratorSelectors.GetGenericAttributesToGenerate(context).Collect();
-
         context.RegisterPostInitializationOutput(StaticAttributesGeneratorOutput.OutputStaticAttributes);
-        context.RegisterSourceOutput(genericAttributesToGenerateProvider, GenericAttributesGeneratorOutput.OutputGenericAttributes);
     }
 
     private void initializeAutoImplementer(IncrementalGeneratorInitializationContext context)

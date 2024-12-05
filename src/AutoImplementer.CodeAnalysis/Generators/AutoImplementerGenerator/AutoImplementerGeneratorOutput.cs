@@ -85,7 +85,7 @@ internal static class AutoImplementerGeneratorOutput
     {
         foreach (var i in interfaces)
         {
-            var members = i.Key.GetMembers();
+            var members = i.Key.GetMembers(); // TODO: inheritance?
 
             foreach (var member in members)
             {

@@ -46,4 +46,6 @@ internal static class SyntaxNodeExtensions
         // recursively check the parent nodes for the namespace
         return GetNamespace(syntaxNode.Parent);
     }
+
+    // public static IEnumerable<IPropertySymbol> GetInheritedProperties(this INamedTypeSymbol namedTypeSymbol);
 }

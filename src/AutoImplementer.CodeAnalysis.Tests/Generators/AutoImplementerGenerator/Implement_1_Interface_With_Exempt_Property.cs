@@ -21,7 +21,7 @@ namespace Basilisque.AutoImplementer.CodeAnalysis.Tests.Generators.AutoImplement
 
 [TestClass]
 [TestCategory("AutoImplementerGenerator")]
-public class Implement_1_Interface_With_Nullable_Properties : BaseAutoImplementerGeneratorTest
+public class Implement_1_Interface_With_Exempt_Property : BaseAutoImplementerGeneratorTest
 {
     protected override void AddSourcesUnderTest(SourceFileList sources)
     {
@@ -29,7 +29,7 @@ public class Implement_1_Interface_With_Nullable_Properties : BaseAutoImplemente
         sources.Add(@"
 #nullable enable
 
-namespace AutoImpl.AIG.TestObjects.Implement_1_Interface_With_Nullable_Properties;
+namespace AutoImpl.AIG.TestObjects.Implement_1_Interface_With_Exempt_Property;
 
 /// <summary>
 /// A class used as parameter type
@@ -44,76 +44,45 @@ public class MyTestClass
 public interface IMyInterface
 {
     /// <summary>
-    /// value type int with ?
+    /// Auto-implemented property
     /// </summary>
-    int? IntWithQuestionMark { get; set; }
+    int AutoImplementedInt { get; set; }
 
     /// <summary>
-    /// value type int with Nullable
+    /// Manually-implemented property
     /// </summary>
-    System.Nullable<int> IntWithNullable { get; set; }
-
-    /// <summary>
-    /// value type bool with ?
-    /// </summary>
-    bool? BoolWithQuestionMark { get; set; }
-
-    /// <summary>
-    /// value type bool with Nullable
-    /// </summary>
-    System.Nullable<bool> BoolWithNullable { get; set; }
-
-    /// <summary>
-    /// string with ?
-    /// </summary>
-    string? StringWithQuestionMark { get; set; }
-
-    /// <summary>
-    /// string with ?
-    /// </summary>
-    MyTestClass? MyTestClassWithQuestionMark { get; set; }
+    [Basilisque.AutoImplementer.Annotations.AutoImplementExempt()]
+    int ManuallyImplementedInt { get; set; }
 }
 ");
 
         // class that implements the interface
         sources.Add(@"
-namespace AutoImpl.AIG.TestObjects.Implement_1_Interface_With_Nullable_Properties;
+namespace AutoImpl.AIG.TestObjects.Implement_1_Interface_With_Exempt_Property;
 
 /// <summary>
 /// The class implementing the interface
 /// </summary>
 public partial class MyImplementation : IMyInterface
-{ }
+{
+    /// <inheritdoc />
+    public int ManuallyImplementedInt { get; set; }
+}
 ");
     }
 
     protected override IEnumerable<(string Name, string SourceText)> GetExpectedInterfaceImplementations()
     {
         yield return (
-            Name: "AutoImpl.AIG.TestObjects.Implement_1_Interface_With_Nullable_Properties.MyImplementation.auto_impl.g.cs",
+            Name: "AutoImpl.AIG.TestObjects.Implement_1_Interface_With_Exempt_Property.MyImplementation.auto_impl.g.cs",
             SourceText: @$"{CommonGeneratorData.GeneratedFileSharedHeaderWithNullable}
-namespace AutoImpl.AIG.TestObjects.Implement_1_Interface_With_Nullable_Properties;
+namespace AutoImpl.AIG.TestObjects.Implement_1_Interface_With_Exempt_Property;
 
 {CommonGeneratorData.GeneratedClassSharedAttributes}
 public partial class MyImplementation
 {{
     /// <inheritdoc />
-    public int? IntWithQuestionMark {{ get; set; }}
-    
-    /// <inheritdoc />
-    public int? IntWithNullable {{ get; set; }}
-    
-    /// <inheritdoc />
-    public bool? BoolWithQuestionMark {{ get; set; }}
-    
-    /// <inheritdoc />
-    public bool? BoolWithNullable {{ get; set; }}
-    
-    /// <inheritdoc />
-    public string? StringWithQuestionMark {{ get; set; }}
-    
-    /// <inheritdoc />
-    public global::AutoImpl.AIG.TestObjects.Implement_1_Interface_With_Nullable_Properties.MyTestClass? MyTestClassWithQuestionMark {{ get; set; }}
+    public required int AutoImplementedInt {{ get; set; }}
 }}
 
 #nullable restore");

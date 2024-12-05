@@ -35,7 +35,7 @@ namespace AutoImpl.AIG.TestObjects.EmptyInterface_IsNotImplemented;
 /// <summary>
 /// The interface to be implemented
 /// </summary>
-[Basilisque.AutoImplementer.Annotations.AutoImplementInterface()]
+[Basilisque.AutoImplementer.Annotations.AutoImplementable()]
 public interface IMyInterface
 { }
 ");

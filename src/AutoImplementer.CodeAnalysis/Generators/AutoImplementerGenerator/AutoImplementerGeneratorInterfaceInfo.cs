@@ -1,4 +1,4 @@
-<!--
+﻿/*
    Copyright 2024 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,12 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
--->
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <IsPackable>false</IsPackable>
-    <IsPublishable>false</IsPublishable>
-    <TargetFrameworks>net8.0</TargetFrameworks>
-    
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(TargetFrameworks);net48</TargetFrameworks>
-  </PropertyGroup>
-  <ItemGroup>
-    <CompilerVisibleProperty Include="LangVersion" />
-    <PackageReference Include="Basilisque.CodeAnalysis" />
+*/
 
-    <PackageReference Include="Basilisque.CodeAnalysis.TestSupport.MSTest" />
-  </ItemGroup>
-</Project>
+namespace Basilisque.AutoImplementer.CodeAnalysis.Generators.AutoImplementerGenerator;
+
+internal class AutoImplementerGeneratorInterfaceInfo
+{
+    public bool IsInBaseList { get; internal set; }
+    public bool Strict { get; internal set; } = true;
+}

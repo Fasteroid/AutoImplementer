@@ -21,6 +21,7 @@
   
   <ItemGroup>
     <PackageReference Include="Basilisque.CodeAnalysis" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Basilisque.CodeAnalysis.TestSupport.MSTest" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
       <PrivateAssets>all</PrivateAssets>

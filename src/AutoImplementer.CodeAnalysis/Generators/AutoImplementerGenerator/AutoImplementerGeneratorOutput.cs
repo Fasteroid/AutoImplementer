@@ -14,40 +14,49 @@
    limitations under the License.
 */
 
-using Basilisque.AutoImplementer.CodeAnalysis.Extensions;
 using Basilisque.AutoImplementer.CodeAnalysis.Generators.StaticAttributesGenerator;
 using Basilisque.CodeAnalysis.Syntax;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
+using System.Diagnostics;
+using MemberTypes = System.Reflection.MemberTypes;
 
 namespace Basilisque.AutoImplementer.CodeAnalysis.Generators.AutoImplementerGenerator;
 
 internal static class AutoImplementerGeneratorOutput
 {
-    internal static void OutputImplementations(SourceProductionContext context, (ClassDeclarationSyntax ClassToGenerate, ImmutableArray<INamedTypeSymbol> Interfaces) generationInfo, RegistrationOptions registrationOptions)
+    internal static void OutputImplementations(SourceProductionContext context, AutoImplementerGeneratorInfo generationInfo, RegistrationOptions registrationOptions)
     {
         if (!checkPreconditions(registrationOptions))
             return;
 
-        var syntaxNodesToImplement = getSyntaxNodesToImplement(generationInfo.Interfaces);
+        if (generationInfo.HasDiagnostics)
+        {
+            foreach (var diagnostic in generationInfo.Diagnostics)
+                context.ReportDiagnostic(diagnostic);
+        }
 
-        // skip if nothing to implement
-        if (!syntaxNodesToImplement.Any())
+        if (!generationInfo.HasInterfaces)
             return;
 
-        var classDeclaration = generationInfo.ClassToGenerate;
+        var syntaxNodesToImplement = getSyntaxNodesToImplement(context, generationInfo.Interfaces);
 
-        var className = classDeclaration.Identifier.Text;
-        var namespaceName = classDeclaration.GetNamespace();
+        // skip if nothing to implement
+        if (!syntaxNodesToImplement.Any() && !generationInfo.Interfaces.Any(inf => !inf.Value.IsInBaseList))
+            return;
+
+        var className = generationInfo.ClassName;
+        var namespaceName = generationInfo.ContainingNamespace;
 
         var compilationName = namespaceName is null ? $"{className}.auto_impl" : $"{namespaceName}.{className}.auto_impl";
 
         var ci = registrationOptions.CreateCompilationInfo(compilationName, namespaceName);
         ci.EnableNullableContext = true;
 
-        ci.AddNewClassInfo(className, classDeclaration.GetAccessModifier(), cl =>
+        ci.AddNewClassInfo(className, generationInfo.AccessModifier, cl =>
         {
             cl.IsPartial = true;
+
+            cl.BaseClass = getBaseInterfaces(generationInfo.Interfaces);
 
             foreach (var node in syntaxNodesToImplement)
             {
@@ -72,20 +81,23 @@ internal static class AutoImplementerGeneratorOutput
         return true;
     }
 
-    private static IEnumerable<Basilisque.CodeAnalysis.Syntax.SyntaxNode> getSyntaxNodesToImplement(ImmutableArray<INamedTypeSymbol> interfaces)
+    private static IEnumerable<Basilisque.CodeAnalysis.Syntax.SyntaxNode> getSyntaxNodesToImplement(SourceProductionContext context, Dictionary<INamedTypeSymbol, AutoImplementerGeneratorInterfaceInfo> interfaces)
     {
         foreach (var i in interfaces)
         {
-            var members = i.GetMembers();
+            var members = i.Key.GetMembers();
 
             foreach (var member in members)
             {
+                if( getAutoImplementExemptAttribute(member) != null)
+                    continue;
+
                 Basilisque.CodeAnalysis.Syntax.SyntaxNode? node;
 
                 switch (member)
                 {
                     case IPropertySymbol propertySymbol:
-                        node = implementProperty(propertySymbol);
+                        node = implementProperty(context, propertySymbol, i.Value);
                         break;
                     //case IMethodSymbol methodSymbol:
                     //    yield return implementMethod(methodSymbol);
@@ -103,10 +115,22 @@ internal static class AutoImplementerGeneratorOutput
         }
     }
 
-    private static Basilisque.CodeAnalysis.Syntax.PropertyInfo? implementProperty(IPropertySymbol propertySymbol)
+    private static string? getBaseInterfaces(Dictionary<INamedTypeSymbol, AutoImplementerGeneratorInterfaceInfo> interfaces)
+    {
+        var baseInterfaces = interfaces.Where(kvp => !kvp.Value.IsInBaseList).Select(kvp => kvp.Key.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)).ToList();
+
+        if (!baseInterfaces.Any())
+            return null;
+
+        return string.Join(", ", baseInterfaces);
+    }
+
+    private static PropertyInfo? implementProperty(SourceProductionContext context, IPropertySymbol propertySymbol, AutoImplementerGeneratorInterfaceInfo info)
     {
         // get the full qualified type name of the property
         var fqtn = propertySymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+
+        bool nullable = false;
 
         if (string.IsNullOrWhiteSpace(fqtn))
             return null;
@@ -114,42 +138,57 @@ internal static class AutoImplementerGeneratorOutput
         // check if the property is nullable
         if (propertySymbol.NullableAnnotation == NullableAnnotation.Annotated)
         {
+            nullable = true;
             // check if the type is a value type and not already a nullable type
             if (!fqtn.EndsWith("?") && !fqtn.StartsWith("global::System.Nullable<"))
                 fqtn += "?";
         }
 
-        if (propertySymbol.GetAttributes().Any(a => a.AttributeClass?.Name == StaticAttributesGeneratorData.ExemptionAttributeClassName))
-            fqtn = "required " + fqtn;
+        var pi = new PropertyInfo(fqtn, propertySymbol.Name);
 
-        var pi = new Basilisque.CodeAnalysis.Syntax.PropertyInfo(fqtn, propertySymbol.Name);
+        copyAttributes(propertySymbol, pi);
+
+        if (info.Strict && !nullable)
+            pi.IsRequired = true;
 
         pi.InheritXmlDoc = true;
-        pi.AccessModifier = mapAccessibility(propertySymbol.DeclaredAccessibility);
+        pi.AccessModifier = propertySymbol.DeclaredAccessibility.ToAccessModifier();
 
         return pi;
     }
 
-    private static AccessModifier mapAccessibility(Accessibility declaredAccessibility)
+    private static AttributeData? getAutoImplementableAttribute(ISymbol memberSymbol)
     {
-        switch (declaredAccessibility)
+        return memberSymbol.GetAttributes().SingleOrDefault(a =>
+                    a.AttributeClass?.Name == StaticAttributesGeneratorData.AutoImplementableAttribute
+                    && a.AttributeClass.ContainingNamespace.ToDisplayString() == CommonGeneratorData.AnnotationsNamespace);
+    }
+
+    private static AttributeData? getAutoImplementExemptAttribute(ISymbol propertySymbol)
+    {
+        return propertySymbol.GetAttributes().SingleOrDefault(a =>
+                    a.AttributeClass?.Name == StaticAttributesGeneratorData.ExemptionAttribute
+                    && a.AttributeClass.ContainingNamespace.ToDisplayString() == CommonGeneratorData.AnnotationsNamespace);
+    }
+
+    private static void copyAttributes(IPropertySymbol propertySymbol, PropertyInfo pi)
+    {
+
+        var attributes = propertySymbol.GetAttributes();
+
+        foreach (var attribute in attributes)
         {
-            case Accessibility.NotApplicable:
-                return AccessModifier.Public;
-            case Accessibility.Private:
-                return AccessModifier.Private;
-            case Accessibility.ProtectedAndInternal:
-                return AccessModifier.ProtectedInternal;
-            case Accessibility.Protected:
-                return AccessModifier.Protected;
-            case Accessibility.Internal:
-                return AccessModifier.Internal;
-            case Accessibility.ProtectedOrInternal:
-                return AccessModifier.ProtectedInternal;
-            case Accessibility.Public:
-                return AccessModifier.Public;
-            default:
-                return AccessModifier.Public;
+            if (attribute.AttributeClass?.ContainingNamespace.ToDisplayString() == CommonGeneratorData.AnnotationsNamespace)
+            {
+                if (attribute.AttributeClass.Name == StaticAttributesGeneratorData.ExemptionAttribute)
+                {
+                    continue; // don't copy internal attributes
+                }
+
+            }
+
+            var att = attribute.ToString();
+            pi.Attributes.Add(new AttributeInfo(att));
         }
     }
 }

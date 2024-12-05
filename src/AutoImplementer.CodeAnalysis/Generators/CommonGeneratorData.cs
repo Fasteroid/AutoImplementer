@@ -23,7 +23,7 @@ namespace Basilisque.AutoImplementer.CodeAnalysis.Generators;
 /// </summary>
 public static class CommonGeneratorData
 {
-    internal const string AutoImplementedAttributesTargetNamespace = "Basilisque.AutoImplementer.Annotations";
+    internal const string AnnotationsNamespace = "Basilisque.AutoImplementer.Annotations";
 
     internal static readonly AssemblyName AssemblyName = Assembly.GetExecutingAssembly().GetName();
 
@@ -59,6 +59,6 @@ using System;";
     /// Provides the attributes that are output for each class as a string
     /// </summary>
     public static readonly string GeneratedClassSharedAttributes = $@"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""{CommonGeneratorData.AssemblyName.Name}"", ""{CommonGeneratorData.AssemblyName.Version}"")]
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-    [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]";
+[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]";
 }

@@ -38,13 +38,13 @@ Now you're ready to [start implementing your interfaces automatically](https://g
 ## Examples
 Create the interfaces:
 ```csharp
-[AutoImplementInterface()]
+[AutoImplementable()]
 public interface ITitle
 {
   [Required] string Title { get; set; } // implements 'Title' as 'required' in .NET 7.0+
 }
 
-[AutoImplementInterface()]
+[AutoImplementable()]
 public interface IDetails
 {
   byte[]? Image { get; set; }

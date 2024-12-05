@@ -23,45 +23,45 @@ namespace Basilisque.AutoImplementer.CodeAnalysis.Generators.StaticAttributesGen
 /// </summary>
 public static class StaticAttributesGeneratorData
 {
-    internal const string AutoImplementInterfaceAttributeClassName = "AutoImplementInterfaceAttribute";
-        internal const string AutoImplementInterfaceAttribute_Strict = "Strict";
+    internal const string AutoImplementableAttribute = "AutoImplementableAttribute";
+        internal const string AutoImplementable_Strict   = "Strict";
 
-    internal const string ExemptionAttributeClassName = "AutoImplementExemptAttribute";
+    internal const string ExemptionAttribute = "AutoImplementExemptAttribute";
 
-    internal const string AutoImplementInterfaceAttributeFullName = $"{AutoImplementedAttributesTargetNamespace}.{AutoImplementInterfaceAttributeClassName}";
-    internal const string ExemptionAttributeFullName              = $"{AutoImplementedAttributesTargetNamespace}.{ExemptionAttributeClassName}";
+    internal const string AutoImplementableFull  = $"{AnnotationsNamespace}.{AutoImplementableAttribute}";
+    internal const string ExemptionAttributeFull = $"{AnnotationsNamespace}.{ExemptionAttribute}";
 
-    private const string AutoImplementInterfaceAttributeCompilationName = $"{AutoImplementInterfaceAttributeFullName}.g";
-    private const string ExemptionAttributeCompilationName              = $"{ExemptionAttributeFullName}.g";
+    private const string AutoImplementableSourceFile  = $"{AutoImplementableFull}.g";
+    private const string ExemptionAttributeSourceFile = $"{ExemptionAttributeFull}.g";
 
-    private static readonly string _autoImplementInterfaceAttributeSource =
+    private static readonly string _autoImplementableAttributeSourceCode =
     @$"{GeneratedFileSharedHeaderWithUsings}
-namespace {AutoImplementedAttributesTargetNamespace}
+namespace {AnnotationsNamespace}
 {{
     /// <summary>
     /// Marks an interface with all members for automatic implementation
     /// </summary>
     {GeneratedClassSharedAttributes}
     [AttributeUsage(AttributeTargets.Interface, AllowMultiple = false, Inherited = false)]
-    internal sealed class {AutoImplementInterfaceAttributeClassName} : Attribute
+    internal sealed class {AutoImplementableAttribute} : Attribute
     {{
         /// <summary>
         /// Should non-nullable properties be marked required?
         /// </summary>
-        public bool {AutoImplementInterfaceAttribute_Strict} {{ get; set; }} = true;
+        public bool {AutoImplementable_Strict} {{ get; set; }} = true;
     }}
 }}";
 
-    private static readonly string _exemptionAttributeSource =
+    private static readonly string _exemptionAttributeSourceCode =
     @$"{GeneratedFileSharedHeaderWithUsings}
-namespace {AutoImplementedAttributesTargetNamespace}
+namespace {AnnotationsNamespace}
 {{
     /// <summary>
     /// Exempts a property from being automatically implemented
     /// </summary>
     {GeneratedClassSharedAttributes}
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
-    internal sealed class {ExemptionAttributeClassName} : Attribute
+    internal sealed class {ExemptionAttribute} : Attribute
     {{
     }}
 }}";
@@ -71,7 +71,7 @@ namespace {AutoImplementedAttributesTargetNamespace}
     /// </summary>
     public static readonly IReadOnlyDictionary<string, (string CompilationName, string Source)> SupportedAttributes = new Dictionary<string, (string CompilationName, string Source)>()
     {
-        { AutoImplementInterfaceAttributeFullName, (AutoImplementInterfaceAttributeCompilationName, _autoImplementInterfaceAttributeSource) },
-        { ExemptionAttributeFullName, (ExemptionAttributeCompilationName, _exemptionAttributeSource) },
+        { AutoImplementableFull, (AutoImplementableSourceFile, _autoImplementableAttributeSourceCode) },
+        { ExemptionAttributeFull, (ExemptionAttributeSourceFile, _exemptionAttributeSourceCode) },
     };
 }

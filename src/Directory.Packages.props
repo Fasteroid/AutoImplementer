@@ -17,11 +17,10 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
-  
   <!-- define NuGet package versions -->
   <ItemGroup>
-    <PackageVersion Include="Basilisque.CodeAnalysis" Version="1.0.0-RC22" />
-    <PackageVersion Include="Basilisque.CodeAnalysis.TestSupport.MSTest" Version="1.0.0-RC22" />
+    <PackageVersion Include="Basilisque.CodeAnalysis" Version="1.0.0-RC25" />
+    <PackageVersion Include="Basilisque.CodeAnalysis.TestSupport.MSTest" Version="1.0.0-RC25" />
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
@@ -29,14 +28,12 @@
     <PackageVersion Include="MSTest.TestAdapter" Version="3.2.2" />
     <PackageVersion Include="MSTest.TestFramework" Version="3.2.2" />
   </ItemGroup>
-  
   <!-- import common NuGet packages -->
   <ItemGroup>
     <GlobalPackageReference Include="Basilisque.CommonFrameworkBuild" Version="1.0.0-RC15">
       <PrivateAssets>all</PrivateAssets>
     </GlobalPackageReference>
   </ItemGroup>
-  
   <!-- import test packages -->
   <ItemGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
     <PackageReference Include="Microsoft.NET.Test.Sdk" />

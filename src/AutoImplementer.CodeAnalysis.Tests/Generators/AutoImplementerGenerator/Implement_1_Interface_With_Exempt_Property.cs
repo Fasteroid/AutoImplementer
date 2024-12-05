@@ -1,4 +1,5 @@
 ﻿/*
+/*
    Copyright 2024 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,12 +31,6 @@ public class Implement_1_Interface_With_Exempt_Property : BaseAutoImplementerGen
 #nullable enable
 
 namespace AutoImpl.AIG.TestObjects.Implement_1_Interface_With_Exempt_Property;
-
-/// <summary>
-/// A class used as parameter type
-/// </summary>
-public class MyTestClass
-{ }
 
 /// <summary>
 /// The interface to be implemented
